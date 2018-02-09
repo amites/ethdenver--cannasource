@@ -10,14 +10,20 @@ contract MITSContract {
   event AddPlantAssetEvent(
     string assetInfo
   );
-  event ModifyPlantAssetStateEvent(
+  event SetPlantStateEvent(
+    string assetInfo
+  );
+  event GetPlantStatesEvent(
     string assetInfo
   );
 
   event AddPackageAssetEvent(
     string assetInfo
   );
-  event ModifyPackageAssetStateEvent(
+  event SetPackageStateEvent(
+    string assetInfo
+  );
+  event GetPackageStatesEvent(
     string assetInfo
   );
 
@@ -32,7 +38,18 @@ contract MITSContract {
     int x
   );
 
-  function MITSContract() {
+
+  bytes32[] public plantStateList;
+  uint256 plantStateIndex = 0;
+
+  bytes32[] public packageStateList;
+  uint256 packageStateIndex = 0;
+
+  function MITSContract(bytes32[] plantStateNames, bytes32[] packageStateNames) {
+      plantStateList = plantStateNames;
+      plantStateIndex = 0;
+      packageStateList = packageStateNames;
+      packageStateIndex = 0;
   }
 
   // Utility functions
@@ -92,6 +109,47 @@ contract MITSContract {
     AddPlantAssetEvent(s);
   }
 
+  // set alowed with no regard to "smart contract"
+  function setPlantState(bytes32 _state_category, int _current_state, int _new_state, bytes32 _txee_id){
+    TestOutputStringEvent("Top setPlantState");
+    var state_category = bytes32ToString(_state_category);
+    var new_state = bytes32ToString(plantStateList[uint256(_new_state)]);
+    var current_state = bytes32ToString(plantStateList[uint256(_current_state)]);
+    var txee_id = bytes32ToString(_txee_id);
+
+    //TestOutputIntEvent(int(systemStateIndex));
+    plantStateIndex = uint256(_new_state);
+    //TestOutputIntEvent(int(systemStateIndex));
+    var stg_val = uintToBytes(uint(plantStateIndex));
+    var state_stg = bytes32ToString(stg_val);
+
+    var s = state_category.toSlice().concat(",current,".toSlice());
+    s = s.toSlice().concat(current_state.toSlice());
+    s = s.toSlice().concat(",next,".toSlice());
+    s = s.toSlice().concat(new_state.toSlice());
+    s = s.toSlice().concat(",TXEE,".toSlice());
+    s = s.toSlice().concat(txee_id.toSlice());
+    s = s.toSlice().concat(",Result,".toSlice());
+    s = s.toSlice().concat("ALLOWED,new,".toSlice());
+    s = s.toSlice().concat(state_stg.toSlice());
+    SetPlantStateEvent(s);
+  }
+
+  function GetPlantStates(bytes32 _state_category, bytes32 _txee_id){
+    var state_category = bytes32ToString(_state_category);
+    var txee_id = bytes32ToString(_txee_id);
+    var s = state_category.toSlice().concat(",".toSlice());
+    for(uint i = 0; i < uint(plantStateList.length); i++){
+      s = s.toSlice().concat(bytes32ToString(plantStateList[uint256(i)]).toSlice());
+      s = s.toSlice().concat(",".toSlice());
+    }
+    s = s.toSlice().concat("TXEE,".toSlice());
+    s = s.toSlice().concat(txee_id.toSlice());
+    s = s.toSlice().concat(",Result,".toSlice());
+    s = s.toSlice().concat("ALLOWED".toSlice());
+    GetPlantStatesEvent(s);
+  }
+
   function addPackageAsset(bytes32 _unique_id, bytes32 _create_op, bytes32 _asset_type, bytes32 _txee_id){
     string memory id = bytes32ToString(_unique_id);
     var create_op = bytes32ToString(_create_op);
@@ -107,5 +165,44 @@ contract MITSContract {
     s = s.toSlice().concat(",Result,".toSlice());
     s = s.toSlice().concat("ALLOWED".toSlice());
     AddPackageAssetEvent(s);
+  }
+  // set alowed with no regard to "smart contract"
+  function setPackageState(bytes32 _state_category, int _current_state, int _new_state, bytes32 _txee_id){
+    TestOutputStringEvent("Top setPlantState");
+    var state_category = bytes32ToString(_state_category);
+    var new_state = bytes32ToString(packageStateList[uint256(_new_state)]);
+    var current_state = bytes32ToString(packageStateList[uint256(_current_state)]);
+    var txee_id = bytes32ToString(_txee_id);
+
+    //TestOutputIntEvent(int(systemStateIndex));
+    packageStateIndex = uint256(_new_state);
+    //TestOutputIntEvent(int(systemStateIndex));
+    var stg_val = uintToBytes(uint(packageStateIndex));
+    var state_stg = bytes32ToString(stg_val);
+
+    var s = state_category.toSlice().concat(",current,".toSlice());
+    s = s.toSlice().concat(current_state.toSlice());
+    s = s.toSlice().concat(",next,".toSlice());
+    s = s.toSlice().concat(new_state.toSlice());
+    s = s.toSlice().concat(",TXEE,".toSlice());
+    s = s.toSlice().concat(txee_id.toSlice());
+    s = s.toSlice().concat(",Result,".toSlice());
+    s = s.toSlice().concat("ALLOWED,new,".toSlice());
+    s = s.toSlice().concat(state_stg.toSlice());
+    SetPackageStateEvent(s);
+  }
+  function GetPackageStates(bytes32 _state_category, bytes32 _txee_id){
+    var state_category = bytes32ToString(_state_category);
+    var txee_id = bytes32ToString(_txee_id);
+    var s = state_category.toSlice().concat(",".toSlice());
+    for(uint i = 0; i < uint(packageStateList.length); i++){
+      s = s.toSlice().concat(bytes32ToString(packageStateList[uint256(i)]).toSlice());
+      s = s.toSlice().concat(",".toSlice());
+    }
+    s = s.toSlice().concat("TXEE,".toSlice());
+    s = s.toSlice().concat(txee_id.toSlice());
+    s = s.toSlice().concat(",Result,".toSlice());
+    s = s.toSlice().concat("ALLOWED".toSlice());
+    GetPackageStatesEvent(s);
   }
 }

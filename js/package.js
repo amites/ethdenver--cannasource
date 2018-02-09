@@ -93,6 +93,54 @@ addEvent.watch(function(error,result){
   }
 });
 
+var addEvent = contractInstance.GetPackageStatesEvent();
+addEvent.watch(function(error,result){
+  if(!error){
+    console.log("GetPackageStatesEvent ", result, " tx_hash: ", result.transactionHash);
+    console.log("GetPackageStatesEvent args ",result.args.assetInfo);
+    var result_elems = result.args.assetInfo.split(",");
+    var elem_index = 0
+    result_elems.forEach(function(elem){
+     console.log(elem_index,":",elem);
+     elem_index++;
+    });
+    /*
+    current_systemState = result_elems[2];
+    console.log(current_systemState);
+    var currentTrans = systemStateObject.transaction_list.find(function(trans){
+        return trans.attempt.startsWith("GetPlantStates") && trans.result === "Incomplete";
+    });
+    if(currentTrans){
+      currentTrans.tx_hash = result.transactionHash;
+      currentTrans.tx_time = parseFloat(new Date().getTime() / 1000.0);
+      currentTrans.result = result.args.systemStateInfo;
+      plantPage(state_div);
+    }else{
+      console.log("did not find trans record");
+    }
+    */
+  }else{
+      console.log(error);
+  }
+});
+
+function getPackageStates() {
+  /*
+  var attempt_stg = "GetPlantStates,TXEE: " + globalUser.unique_id;
+  transaction_summary = {
+    tx_hash: '',
+    asset_id: '',
+    attempt: attempt_stg,
+    result: 'Incomplete',
+    tx_class: '',
+    tx_ee: globalUser.unique_id
+  };
+  systemStateObject.transaction_list.push(transaction_summary);
+  */
+  contractInstance.GetPackageStates("GetPackageStates", globalUser.unique_id, {from: web3.eth.accounts[0], gas:4000000}, function(result) {
+  });
+}
+
 function newPackage_Contract(){
   var new_package = newPackage();
   packages.push(new_package);
@@ -231,6 +279,7 @@ function packagePage(){
 
   html = '';
   html += '<a href="#" onclick="newPackage_Contract()" class="btn btn-success">Add Package</a>';
+  html += '<a href="#" onclick="getPackageStates()" class="btn btn-success">Get Package States</a>';
   $(package_controls_div).append(html);
 }
 
