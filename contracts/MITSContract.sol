@@ -110,20 +110,20 @@ contract MITSContract {
   }
 
   // set alowed with no regard to "smart contract"
-  function setPlantState(bytes32 _state_category, int _current_state, int _new_state, bytes32 _txee_id){
+  function setPlantState(bytes32 _unique_id, bytes32 _state_category, int _current_state, int _new_state, bytes32 _txee_id){
     TestOutputStringEvent("Top setPlantState");
+    string memory id = bytes32ToString(_unique_id);
     var state_category = bytes32ToString(_state_category);
     var new_state = bytes32ToString(plantStateList[uint256(_new_state)]);
     var current_state = bytes32ToString(plantStateList[uint256(_current_state)]);
     var txee_id = bytes32ToString(_txee_id);
-
-    //TestOutputIntEvent(int(systemStateIndex));
     plantStateIndex = uint256(_new_state);
-    //TestOutputIntEvent(int(systemStateIndex));
     var stg_val = uintToBytes(uint(plantStateIndex));
     var state_stg = bytes32ToString(stg_val);
 
-    var s = state_category.toSlice().concat(",current,".toSlice());
+    var s = state_category.toSlice().concat(",ID,".toSlice());
+    s = s.toSlice().concat(id.toSlice());
+    s = s.toSlice().concat(",current,".toSlice());
     s = s.toSlice().concat(current_state.toSlice());
     s = s.toSlice().concat(",next,".toSlice());
     s = s.toSlice().concat(new_state.toSlice());
@@ -166,21 +166,22 @@ contract MITSContract {
     s = s.toSlice().concat("ALLOWED".toSlice());
     AddPackageAssetEvent(s);
   }
+
   // set alowed with no regard to "smart contract"
-  function setPackageState(bytes32 _state_category, int _current_state, int _new_state, bytes32 _txee_id){
-    TestOutputStringEvent("Top setPlantState");
+  function setPackageState(bytes32 _unique_id, bytes32 _state_category, int _current_state, int _new_state, bytes32 _txee_id){
+    TestOutputStringEvent("Top setPackageState");
+    string memory id = bytes32ToString(_unique_id);
     var state_category = bytes32ToString(_state_category);
     var new_state = bytes32ToString(packageStateList[uint256(_new_state)]);
     var current_state = bytes32ToString(packageStateList[uint256(_current_state)]);
     var txee_id = bytes32ToString(_txee_id);
-
-    //TestOutputIntEvent(int(systemStateIndex));
     packageStateIndex = uint256(_new_state);
-    //TestOutputIntEvent(int(systemStateIndex));
-    var stg_val = uintToBytes(uint(packageStateIndex));
+    var stg_val = uintToBytes(uint(_state_category));
     var state_stg = bytes32ToString(stg_val);
 
-    var s = state_category.toSlice().concat(",current,".toSlice());
+    var s = state_category.toSlice().concat(",ID,".toSlice());
+    s = s.toSlice().concat(id.toSlice());
+    s = s.toSlice().concat(",current,".toSlice());
     s = s.toSlice().concat(current_state.toSlice());
     s = s.toSlice().concat(",next,".toSlice());
     s = s.toSlice().concat(new_state.toSlice());
@@ -191,6 +192,7 @@ contract MITSContract {
     s = s.toSlice().concat(state_stg.toSlice());
     SetPackageStateEvent(s);
   }
+
   function GetPackageStates(bytes32 _state_category, bytes32 _txee_id){
     var state_category = bytes32ToString(_state_category);
     var txee_id = bytes32ToString(_txee_id);

@@ -61,7 +61,7 @@ function newPlant(){
   transaction_summary = {
     tx_hash: '',
     tx_time: '',
-    asset_id: '',
+    asset_id: new_assetPlant.unique_id,
     attempt: attempt_stg,
     result: 'Incomplete',
     tx_class: 'PLANT',
@@ -154,6 +154,76 @@ function getPlantStates() {
   });
 }
 
+var addEvent = contractInstance.SetPlantStateEvent();
+addEvent.watch(function(error,result){
+    if(!error){
+        //console.log("SetPlantStateEvent ", result);
+        var result_elems = result.args.assetInfo.split(",");
+        if(result_elems.length === 0){
+          return;
+        }
+        var count = 0;
+        result_elems.forEach(function(item){
+            console.log(count," ", item);
+            count++;
+        });
+
+        var id = result_elems[2];
+        var process_category = result_elems[1];
+        var previous_state = result_elems[4];
+        var new_state_name =  result_elems[6];
+        var active_asset = plants.find(function(asset){
+          return asset.unique_id === id;
+        });
+        if(active_asset){
+          //console.log("active_asset: ",active_asset);
+        }else{
+          console.log("asset not found for: ", result_elems[0]);
+        }
+        //console.log(process_category, " from :", previous_state, " to: ",new_state_name);
+        if(active_asset && active_asset.transaction_list){
+            active_asset.state = new_state_name;
+            active_asset.last_update_time = parseFloat(new Date().getTime() / 1000.0);;
+            var currentTrans = active_asset.transaction_list.find(function(trans){
+              return trans.attempt.startsWith("SetPlantState") && trans.result === "Incomplete";
+            });
+            if(currentTrans){
+              currentTrans.tx_hash = result.transactionHash;
+              currentTrans.tx_time = parseFloat(new Date().getTime() / 1000.0);
+              currentTrans.result = result.args.assetInfo;
+              console.log(currentTrans, " process_category: ", process_category);
+            }else{
+                console.log("transaction not found for: ", process_category);
+            }
+            console.log(active_asset);
+            provenancePlantPage(active_asset.unique_id)
+        }else{
+            console.log("No active_asset");
+        }
+    }else{
+        console.log(error);
+    }
+});
+
+function setPlantState(active_plant, next_state) {
+  current_systemState = active_plant.state;
+  var attempt_stg = "SetPlantState,ID,"+active_plant.unique_id+',current,'+current_systemState+",next,"+next_state+",TXEE: " + globalUser.unique_id;
+  console.log(attempt_stg);
+  transaction_summary = {
+    tx_hash: '',
+    asset_id: active_plant.unique_id,
+    attempt: attempt_stg,
+    result: 'Incomplete',
+    tx_class: 'PLANT',
+    tx_ee: globalUser.unique_id
+  };
+  active_plant.transaction_list.push(transaction_summary);
+  console.log(current_systemState, " ", next_state);
+  console.log("SetPlantState", findStateEnum(plantStates, current_systemState), findStateEnum(plantStates, next_state), globalUser.unique_id);
+  contractInstance.setPlantState(active_plant.unique_id, "SetPlantState", findStateEnum(plantStates, current_systemState), findStateEnum(plantStates, next_state), globalUser.unique_id, {from: web3.eth.accounts[0], gas:4000000}, function(result){
+  });
+}
+
 function newPlant_Contract(){
   var new_plant = newPlant();
   plants.push(new_plant);
@@ -172,12 +242,12 @@ function changePlantState(id){
     return plant.unique_id === id;
   });
   if(active_plant){
-    active_plant.state = new_state;
-    active_plant.last_update_time = parseFloat(new Date().getTime() / 1000.0);
+    setPlantState(active_plant, new_state);
+    //active_plant.state = new_state;
+    //active_plant.last_update_time = parseFloat(new Date().getTime() / 1000.0);
   }else{
     console.log("plant not found for ", id);
   }
-  plantPage();
 }
 
 function draw_plant_stub(){
@@ -234,15 +304,15 @@ function provenancePlantPage(plant_id){
               return user.unique_id === result_items[5];
             });
             //var role_name = findStateName(userRoles,parseInt(txee_user.role));
-            html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+role_name+'</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[7]) +'">Result<br/>'+result_items[7]+'</td></tr>';
-          }else if(result_items[0] === "ModifyStateBloodAsset"){
+            html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+'role_name'+'</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[7]) +'">Result<br/>'+result_items[7]+'</td></tr>';
+          }else if(result_items[0] === "SetPlantState"){
             txee_user = users.find(function(user){
-              return user.unique_id === result_items[7];
+              return user.unique_id === result_items[8];
             });
-            var role_name = findStateName(userRoles,parseInt(txee_user.role));
+            //var role_name = findStateName(userRoles,parseInt(txee_user.role));
             console.log(transactionResultStates);
-            var color = findStateColor(transactionResultStates, result_items[9]);
-            html += '<tr><td colspan ="2">' + 'Tx type:<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="2">State Category<br/>'+result_items[3]+ '</td><td colspan ="2">From<br/>'+result_items[4]+'</td><td colspan ="2">To<br/>'+result_items[5]+'</td><td colspan ="2">'+result_items[6]+'<br/>'+result_items[7]+'<br/>'+'role_name'+'</td><td colspan="2" bgcolor="'+ findStateColor(transactionResultStates, result_items[9]) +'">Result<br/>'+result_items[9]+'</td></tr>';
+            var color = findStateColor(transactionResultStates, result_items[10]);
+            html += '<tr><td colspan ="4">' + 'Tx type:<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="2">From<br/>'+result_items[4]+'</td><td colspan ="2">To<br/>'+result_items[6]+'</td><td colspan ="2">'+result_items[7]+'<br/>'+result_items[8]+'<br/>'+'role_name'+'</td><td colspan="2" bgcolor="'+ findStateColor(transactionResultStates, result_items[10]) +'">Result<br/>'+result_items[10]+'</td></tr>';
           }
         });
       }
