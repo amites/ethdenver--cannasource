@@ -6,10 +6,11 @@ function writeJSONHandler(url, js_object){
     type: 'POST',
     url: 'php/save_objects.php',
     data: {data : data, path : url},
+    cache: false,
     success: success
   });
   function success(msg) {
-    console.log("msg: ", msg);
+    //console.log("msg: ", msg);
     console.log("write ok");
   }
 }
@@ -21,9 +22,10 @@ function readJSONHandler(url, type){
   $.ajax({
         url: url,
         dataType: 'text',
+        cache: false
     }).done(success);
     function success(data) {
-      console.log("data: ", data);
+      //console.log("data: ", data);
       if(type === 'plants'){
         global_plants = JSON.parse(data);
         console.log("global_plants: ",global_plants);
