@@ -363,6 +363,7 @@ function plantPage(){
   html = '';
   html += '<a href="#" onclick="newPlant_Contract()" class="btn btn-success">Add Plant</a>';
   html += '<a href="#" onclick="getPlantStates()" class="btn btn-success">Get Plant States</a>';
+  html += '<a href="#" onclick="plantRoomPage()" class="btn btn-success">Plant Room</a>';
   $(plant_controls_div).append(html);
 }
 
