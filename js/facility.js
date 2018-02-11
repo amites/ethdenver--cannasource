@@ -74,7 +74,7 @@ function simIoTDataPlantRoom(){
   plant_room.humidity = Math.floor((Math.random()*10) + 70); // 80 + (0 - 2)
   plant_room.air_flow = Math.floor((Math.random()*10)); // 0 - 10 units
   var lock_test = Math.random();
-  console.log("lock_test: ", lock_test);
+  //console.log("lock_test: ", lock_test);
   plant_room.lock =  lock_test < 0.5 ? 'LOCKED' : 'UNLOCKED';
   plant_room.update_time = parseFloat(new Date().getTime() / 1000.0);
 }

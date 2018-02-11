@@ -31,6 +31,8 @@ var assetTypeName = 'PLANT';
 
 users = [];
 
+var op_string = 'No Pending Op';
+
 // debug event handlers
 var addEvent = contractInstance.TestOutputStringEvent();
 addEvent.watch(function(error,result){
@@ -60,6 +62,19 @@ addEvent.watch(function(error,result){
     }
 });
 
+var addEvent = contractInstance.AYTEvent();
+addEvent.watch(function(error,result){
+    if(!error){
+        console.log("AYTEvent ", result);
+        console.log("args ",result.args);
+        console.log("AYT Complete");
+        op_string =  "AYT Complete";
+        document.getElementById("asset_op_info").value = op_string;
+    }else{
+        console.log(error);
+    }
+});
+
 function getTrans(){
   var trans_hash = document.getElementById('result_field').value.toString();
   web3.eth.getTransaction(trans_hash.toString(), function(error, result){
@@ -83,6 +98,9 @@ function getTransByTxID(trans_hash){
 }
 
 function ayt(){
+  console.log("Pending AYT");
+  op_string =  "Pending AYT";
+  document.getElementById("asset_op_info").value = op_string;
   contractInstance.AYT({from: web3.eth.accounts[0]}, function(result) {
   });
 }
@@ -93,13 +111,10 @@ function writeJSON(){
 }
 
 function readJSON(){
-  //var promise = readJSON_Plants();
-  //promise.success(function (data) {
-  //  alert(data);
-  //});
+  op_string = "Loading Assets";
+  document.getElementById("asset_op_info").value = op_string;
   readJSONHandler('/proto/data/plants.txt', 'plants');
   readJSONHandler('/proto/data/packages.txt', 'packages');
-  //drawAssetPage(asset_div);
 }
 
 function draw_inventory_stub(){
@@ -110,6 +125,9 @@ function draw_inventory_stub(){
   package_page_is_active = false;
   $(package_page_div).html('');
   $(package_controls_div).html('');
+
+  state_table_active = false;
+  $(state_table_div).html('');
 
   var asset_page_is_active = true;
   $(asset_div).html('');
@@ -153,14 +171,19 @@ function drawAssetPage(){
     //console.log(assets);
   }
 
-  var asset_caption = asset_div.appendChild(document.createElement('caption'));
-  var asset_title = asset_div.appendChild(document.createElement('span'));
-  asset_title.classList.add('h3');
-  asset_title.innerHTML = 'Asset Table';
+  //var asset_caption = asset_div.appendChild(document.createElement('caption'));
+  //var asset_title = asset_div.appendChild(document.createElement('span'));
+  //asset_title.classList.add('h3');
+  //asset_title.innerHTML = 'Asset Table';
 
   var asset_table = asset_div.appendChild(document.createElement('table'));
-  asset_table.classList.add('table', 'table-bordered', 'table-condensed', 'table-hover', 'table-striped');
+  //asset_table.classList.add('table', 'table-bordered', 'table-condensed', 'table-hover', 'table-striped');
+
   var html = '';
+  html += '<b>Asset Table</b>';
+  html += '<input id="asset_op_info" type="text name="Operation">';
+  html += '<table class="table table-bordered table-striped" id="asset_table">';
+
   html += '<tr><th>No.</th><th>ID</th><th>Creation</th><th>Type</th><th>Currrent State</th><th>Last Update</th></tr>'; //'<th>Details</th></tr>';  // Type, ID, creation, state, last update
 
   var plant_count = 0
@@ -194,10 +217,13 @@ function drawAssetPage(){
   html += '<a href="#" onclick="drawAssetPage()" class="btn btn-success">Asset Page</a>';
   html += '<a href="#" onclick="plantPage()" class="btn btn-success">Plant Page</a>';
   html += '<a href="#" onclick="packagePage()" class="btn btn-success">Package Page</a>';
-  html += '<a href="#" onclick="ayt()" class="btn btn-success">AYT</a>';
   html += '<a href="#" onclick="writeJSON()" class="btn btn-danger">Save Assets</a>';
   html += '<a href="#" onclick="readJSON()" class="btn btn-danger">Load Assets</a>';
+  html += '<a href="#" onclick="stateInfoPage()" class="btn btn-primary">State Info</a>';
+  html += '<a href="#" onclick="ayt()" class="btn btn-info">AYT</a>';
   $(asset_controls).append(html);
+
+  document.getElementById("asset_op_info").value = op_string;
 }
 
 $(document).ready(function() {

@@ -32,6 +32,8 @@ function readJSONHandler(url, type){
       }else if(type === 'packages'){
         global_packages = JSON.parse(data);
         console.log("global_packages: ",global_packages);
+        op_string = "Asset Load Complete";
+        document.getElementById("asset_op_info").value = op_string;
       }
     }
 }

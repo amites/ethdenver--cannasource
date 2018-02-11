@@ -46,6 +46,8 @@ var assetPlant = {
 
 var plants = [];
 
+var plant_op_string = "No Pending Op";
+
 function newPlant(){
   var new_assetPlant = {
     unique_id: uuid_hex(),
@@ -94,6 +96,8 @@ addEvent.watch(function(error,result){
           currentTrans.tx_time = parseFloat(new Date().getTime() / 1000.0);
           currentTrans.result = result.args.assetInfo;
           console.log(active_asset);
+          plant_op_string = "Add Plant Completed";
+          document.getElementById("plant_op_info").value = plant_op_string;
           plantPage();
       }else{
           console.log("No active_asset.transaction_list");
@@ -196,6 +200,8 @@ addEvent.watch(function(error,result){
                 console.log("transaction not found for: ", process_category);
             }
             console.log(active_asset);
+            plant_op_string = "State Transition Complete";
+            document.getElementById("plant_op_info").value = plant_op_string;
             provenancePlantPage(active_asset.unique_id)
         }else{
             console.log("No active_asset");
@@ -225,6 +231,7 @@ function setPlantState(active_plant, next_state) {
 }
 
 function newPlant_Contract(){
+  document.getElementById("plant_op_info").value = "Pending Add Plant";
   var new_plant = newPlant();
   plants.push(new_plant);
   console.log(new_plant, " ", plants);
@@ -233,6 +240,7 @@ function newPlant_Contract(){
 }
 
 function changePlantState(id){
+  document.getElementById("plant_op_info").value = "Pending State Transition";
   console.log(id);
   var select_id = 'selected_plant_state_'+id;
   console.log(select_id);
@@ -251,8 +259,10 @@ function changePlantState(id){
 }
 
 function draw_plant_stub(){
+  console.log("plant stub");
     plant_provenance_page_is_active = false;
     $(plant_provenance_page_div).html('');
+
     //plant_page_is_active = false;
     //$(plant_page_div).html('');
     //$(plant_controls_div).html('');
@@ -266,7 +276,7 @@ function provenancePlantPage(plant_id){
   $(plant_page_div).html('');
   $(plant_controls_div).html('');
 
-  plant_provenance_page_is_active = false;
+  plant_provenance_page_is_active = true;
   $(plant_provenance_page_div).html('');
 
   var plant = plants.find(function(plant){
@@ -329,6 +339,9 @@ function plantPage(){
   var asset_page_is_active = false;
   $(asset_div).html('');
 
+  plant_provenance_page_is_active = false;
+  $(plant_provenance_page_div).html('');
+
   plant_page_is_active = true;
   $(plant_page_div).html('');
 
@@ -336,6 +349,7 @@ function plantPage(){
 
   var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
   html += '<b>Plants Table</b>';
+  html += '<input id="plant_op_info" type="text name="Operation">';
   html += '<table class="table table-bordered table-striped" id="donor_history_table">';
 
   html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Currrent State</th><th>Last Update</th><th>Details</th></tr>';  // Type, ID, creation, state, last update
@@ -365,6 +379,7 @@ function plantPage(){
   html += '<a href="#" onclick="getPlantStates()" class="btn btn-success">Get Plant States</a>';
   html += '<a href="#" onclick="plantRoomPage()" class="btn btn-success">Plant Room</a>';
   $(plant_controls_div).append(html);
+  document.getElementById("plant_op_info").value = plant_op_string;
 }
 
 $(document).ready(function() {

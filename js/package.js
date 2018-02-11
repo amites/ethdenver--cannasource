@@ -31,6 +31,8 @@ var assetPackage = {
 
 var packages = [];
 
+var package_op_string = "No Pending Op";
+
 function newPackage(){
   var new_assetPackage = {
     unique_id: uuid_hex(),
@@ -81,6 +83,8 @@ addEvent.watch(function(error,result){
           currentTrans.tx_time = parseFloat(new Date().getTime() / 1000.0);
           currentTrans.result = result.args.assetInfo;
           console.log(active_asset);
+          package_op_string = "Add Package Complete";
+          document.getElementById("package_op_info").value = package_op_string;
           packagePage();
       }else{
           console.log("No active_asset.transaction_list");
@@ -182,6 +186,8 @@ addEvent.watch(function(error,result){
                 console.log("transaction not found for: ", process_category);
             }
             console.log(active_asset);
+            package_op_string = "State Transition Complete";
+            document.getElementById("package_op_info").value = package_op_string;
             provenancePackagePage(active_asset.unique_id)
         }else{
             console.log("No active_asset");
@@ -211,6 +217,8 @@ function setPackageState(active_package, next_state) {
 }
 
 function newPackage_Contract(){
+  package_op_string = "Pending Add Package";
+  document.getElementById("package_op_info").value = package_op_string;
   var new_package = newPackage();
   packages.push(new_package);
   console.log(new_package, " ", new_package);
@@ -220,6 +228,8 @@ function newPackage_Contract(){
 
 function changePackageState(id){
   //console.log(id);
+  package_op_string = "Pending State Transition";
+  document.getElementById("package_op_info").value = package_op_string;
   var select_id = 'selected_package_state_'+id;
   //console.log(select_id);
   var new_state = $('#'+select_id).val();
@@ -327,6 +337,7 @@ function packagePage(){
 
   var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
   html += '<b>Packages Table</b>';
+  html += '<input id="package_op_info" type="text name="Operation">';
   html += '<table class="table table-bordered table-striped" id="donor_history_table">';
   html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Package Type</th><th>Currrent State</th><th>Last Update</th><th>Details</th></tr>';  // Type, ID, creation, state, last update
   var count = 0;
@@ -357,6 +368,7 @@ function packagePage(){
   html += '<a href="#" onclick="newPackage_Contract()" class="btn btn-success">Add Package</a>';
   html += '<a href="#" onclick="getPackageStates()" class="btn btn-success">Get Package States</a>';
   $(package_controls_div).append(html);
+  document.getElementById("package_op_info").value = package_op_string;
 }
 
 $(document).ready(function() {

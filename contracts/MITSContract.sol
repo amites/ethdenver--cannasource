@@ -38,6 +38,10 @@ contract MITSContract {
     int x
   );
 
+  event AYTEvent(
+    string ayt
+  );
+
 
   bytes32[] public plantStateList;
   uint256 plantStateIndex = 0;
@@ -89,7 +93,7 @@ contract MITSContract {
 
   function AYT(){
     var s = "AYT".toSlice().concat(",MITS YIA".toSlice());
-    TestOutputStringEvent(s);
+    AYTEvent(s);
   }
 
   function addPlantAsset(bytes32 _unique_id, bytes32 _create_op, bytes32 _asset_type, bytes32 _txee_id){
