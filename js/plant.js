@@ -110,50 +110,37 @@ addEvent.watch(function(error,result){
   }
 });
 
+var plant_state_btn = false; // hack to prevent old event from doing alert on reset
 var addEvent = contractInstance.GetPlantStatesEvent();
 addEvent.watch(function(error,result){
   if(!error){
     console.log("GetPlantStatesEvent ", result, " tx_hash: ", result.transactionHash);
     console.log("GetPlantStatesEvent args ",result.args.assetInfo);
     var result_elems = result.args.assetInfo.split(",");
-    var elem_index = 0
+    var elem_index = 0;
+    var plant_state_list = '';
     result_elems.forEach(function(elem){
      console.log(elem_index,":",elem);
      elem_index++;
+     plant_state_list += elem+"\n";
     });
-    /*
-    current_systemState = result_elems[2];
-    console.log(current_systemState);
-    var currentTrans = systemStateObject.transaction_list.find(function(trans){
-        return trans.attempt.startsWith("GetPlantStates") && trans.result === "Incomplete";
-    });
-    if(currentTrans){
-      currentTrans.tx_hash = result.transactionHash;
-      currentTrans.tx_time = parseFloat(new Date().getTime() / 1000.0);
-      currentTrans.result = result.args.systemStateInfo;
-      plantPage(state_div);
-    }else{
-      console.log("did not find trans record");
+    if(plant_state_btn){
+      alert(plant_state_list);
+      plant_op_string = "Completed State List Request";
+      if(document.getElementById("plant_op_info")){
+        document.getElementById("plant_op_info").value = plant_op_string;
+      }
+      plant_state_btn = false;
     }
-    */
   }else{
       console.log(error);
   }
 });
 
 function getPlantStates() {
-  /*
-  var attempt_stg = "GetPlantStates,TXEE: " + globalUser.unique_id;
-  transaction_summary = {
-    tx_hash: '',
-    asset_id: '',
-    attempt: attempt_stg,
-    result: 'Incomplete',
-    tx_class: '',
-    tx_ee: globalUser.unique_id
-  };
-  systemStateObject.transaction_list.push(transaction_summary);
-  */
+  plant_state_btn = true;
+  plant_op_string = "Pending State List Request";
+  document.getElementById("plant_op_info").value = plant_op_string;
   contractInstance.GetPlantStates("GetPlantStates", globalUser.unique_id, {from: web3.eth.accounts[0], gas:4000000}, function(result) {
   });
 }
@@ -376,8 +363,8 @@ function plantPage(){
 
   html = '';
   html += '<a href="#" onclick="newPlant_Contract()" class="btn btn-success">Add Plant</a>';
-  html += '<a href="#" onclick="getPlantStates()" class="btn btn-success">Get Plant States</a>';
-  html += '<a href="#" onclick="plantRoomPage()" class="btn btn-success">Plant Room</a>';
+  html += '<a href="#" onclick="plantRoomPage()" class="btn btn-primary">Plant Room</a>';
+  html += '<a href="#" onclick="getPlantStates()" class="btn btn-info">List Plant States</a>';
   $(plant_controls_div).append(html);
   document.getElementById("plant_op_info").value = plant_op_string;
 }

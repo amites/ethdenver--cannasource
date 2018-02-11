@@ -219,7 +219,7 @@ function drawAssetPage(){
   html += '<a href="#" onclick="packagePage()" class="btn btn-success">Package Page</a>';
   html += '<a href="#" onclick="writeJSON()" class="btn btn-danger">Save Assets</a>';
   html += '<a href="#" onclick="readJSON()" class="btn btn-danger">Load Assets</a>';
-  html += '<a href="#" onclick="stateInfoPage()" class="btn btn-primary">State Info</a>';
+  html += '<a href="#" onclick="stateInfoPage()" class="btn btn-primary">Domain Info</a>';
   html += '<a href="#" onclick="ayt()" class="btn btn-info">AYT</a>';
   $(asset_controls).append(html);
 
