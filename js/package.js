@@ -315,7 +315,7 @@ var package_page_div;
 var package_page_is_active = false;
 var package_controls_div;
 function packagePage(){
-  var asset_page_is_active = false;
+  asset_page_is_active = false;
   $(asset_div).html('');
 
   package_page_is_active = true;
@@ -326,7 +326,7 @@ function packagePage(){
   var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
   html += '<b>Packages Table</b>';
   html += '<input id="package_op_info" type="text name="Operation">';
-  html += '<table class="table table-bordered table-striped" id="donor_history_table">';
+  html += '<table class="table table-bordered table-striped" id="package_table">';
   html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Package Type</th><th>Currrent State</th><th>Last Update</th><th>Details</th></tr>';  // Type, ID, creation, state, last update
   var count = 0;
   packages.forEach(function(package){

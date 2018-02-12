@@ -29,8 +29,6 @@ var asset = {
 var assets = [];
 var assetTypeName = 'PLANT';
 
-users = [];
-
 var op_string = 'No Pending Op';
 
 // debug event handlers
@@ -129,7 +127,11 @@ function draw_inventory_stub(){
   state_table_active = false;
   $(state_table_div).html('');
 
-  var asset_page_is_active = true;
+  user_page_active = false;
+  $(user_page_div).html('');
+  $(user_controls_div).html('');
+
+  asset_page_is_active = true;
   $(asset_div).html('');
 
   drawAssetPage();
@@ -155,7 +157,7 @@ function newAsset(assetTypeName){
 var asset_div;
 var asset_page_is_active = false;
 function drawAssetPage(){
-  var asset_page_is_active = true;
+  asset_page_is_active = true;
   $(asset_div).html('');
 
   if(global_plants && global_plants.length !== 0 && global_packages && global_packages.length !== 0){
@@ -217,6 +219,8 @@ function drawAssetPage(){
   html += '<a href="#" onclick="drawAssetPage()" class="btn btn-success">Asset Page</a>';
   html += '<a href="#" onclick="plantPage()" class="btn btn-success">Plant Page</a>';
   html += '<a href="#" onclick="packagePage()" class="btn btn-success">Package Page</a>';
+  html += '<a href="#" onclick="facilityPage()" class="btn btn-success">Facility Page</a>';
+  html += '<a href="#" onclick="userPage()" class="btn btn-success">User Page</a>';
   html += '<a href="#" onclick="writeJSON()" class="btn btn-danger">Save Assets</a>';
   html += '<a href="#" onclick="readJSON()" class="btn btn-danger">Load Assets</a>';
   html += '<a href="#" onclick="stateInfoPage()" class="btn btn-primary">Domain Info</a>';
@@ -234,7 +238,7 @@ $(document).ready(function() {
   globalUser = {
     unique_id: '46c1e3ebbbbbfddf8266c76206910bcf',
     role:  0,
-    facility:  'anonymous'
+    facility:  'Facility 1'
   };
   users.push(globalUser);
 

@@ -323,7 +323,7 @@ var plant_page_is_active = false;
 var plant_controls_div;
 
 function plantPage(){
-  var asset_page_is_active = false;
+  asset_page_is_active = false;
   $(asset_div).html('');
 
   plant_provenance_page_is_active = false;
@@ -337,7 +337,7 @@ function plantPage(){
   var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
   html += '<b>Plants Table</b>';
   html += '<input id="plant_op_info" type="text name="Operation">';
-  html += '<table class="table table-bordered table-striped" id="donor_history_table">';
+  html += '<table class="table table-bordered table-striped" id="plant_table">';
 
   html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Currrent State</th><th>Last Update</th><th>Details</th></tr>';  // Type, ID, creation, state, last update
   var count = 0;

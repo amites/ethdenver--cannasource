@@ -9,15 +9,35 @@ var room = {
   facility: '',
 };
 
+var enumFacilities = {
+  NONE: 0,
+  FACILITY_1: 1,
+  FACILITY_2: 2,
+}
+
+var listFacilities = [
+    {
+      state_name: 'NONE',
+      state_enum:  enumFacilities.NONE
+    },{
+      state_name: 'FACILITY_1',
+      state_enum:  enumFacilities.FACILITY_1
+    },{
+      state_name: 'FACILITY_2',
+      state_enum:  enumFacilities.FACILITY_2
+    }
+];
+
 facility = {
   unique_id: uuid_hex(),
-  name: 'Facility 1',
+  name: 'FACILITY_1',
+  rooms: [],
 }
 
 plant_room = {
   unique_id: uuid_hex(),
   name: 'Plant Room',
-  facility: 'Facility 1',
+  facility: 'FACILITY_1',
   temp: '',
   humidity: '',
   air_flow: '',
@@ -28,7 +48,7 @@ plant_room = {
 package_room = {
   unique_id: uuid_hex(),
   name: 'Package Room',
-  facility: 'Facility 1'
+  facility: 'FACILITY_1'
 };
 
 function draw_plant_stub(){
@@ -85,6 +105,10 @@ function timerLoop(){
     plantRoomPage();
   }
   setTimeout(timerLoop, iot_refresh_period);
+}
+
+function facilityPage(){
+  console.log("facilityPage");
 }
 
 $(document).ready(function(){
