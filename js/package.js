@@ -1,19 +1,23 @@
 var enumPackageStates = {
-  CREATED_ASSET: 0,
+  CREATED_PACKAGE: 0,
   INVENTORY: 1,
   TRANSFERRING: 2,
+  DISPOSED: 3,
 }
 
 var packageStates = [
     {
-      state_name: 'CREATED_ASSET',
-      state_enum:  enumPackageStates.CREATED_ASSET
+      state_name: 'CREATED_PACKAGE',
+      state_enum:  enumPackageStates.CREATED_PACKAGE
     },{
       state_name: 'INVENTORY',
       state_enum:  enumPackageStates.INVENTORY
     },{
       state_name: 'TRANSFERRING',
       state_enum:  enumPackageStates.TRANSFERRING
+    },{
+      state_name: 'DISPOSED',
+      state_enum:  enumPackageStates.DISPOSED
     }
 ];
 
@@ -41,7 +45,7 @@ function newPackage(){
     quantity: "1 oz",
     strain: "Strain 1",
     location: "Room 2",
-    state: "CREATED_ASSET",
+    state: "CREATED_PACKAGE",
     creation_time: parseFloat(new Date().getTime() / 1000.0),
     last_update_time: parseFloat(new Date().getTime() / 1000.0),
     transaction_list: [],
@@ -123,7 +127,6 @@ addEvent.watch(function(error,result){
       console.log(error);
   }
 });
-
 
 function getPackageStates() {
   package_state_btn = true; // hack to prevent old event from doing alert on reset

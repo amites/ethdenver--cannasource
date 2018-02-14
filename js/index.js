@@ -35,8 +35,8 @@ var op_string = 'No Pending Op';
 var addEvent = contractInstance.TestOutputStringEvent();
 addEvent.watch(function(error,result){
     if(!error){
-        console.log("TestOutputStringEvent ", result, " tx_hash: ", result.transactionHash);
-        console.log("args ",result.args);
+        //console.log("TestOutputStringEvent ", result, " tx_hash: ", result.transactionHash);
+        //console.log("args ",result.args);
     }else{
         console.log(error);
     }
@@ -104,6 +104,7 @@ function ayt(){
 }
 
 function writeJSON(){
+  writeJSONHandler('/proto/data/users.txt', users);
   writeJSONHandler('/proto/data/plants.txt', plants);
   writeJSONHandler('/proto/data/packages.txt', packages);
 }
@@ -111,6 +112,7 @@ function writeJSON(){
 function readJSON(){
   op_string = "Loading Assets";
   document.getElementById("asset_op_info").value = op_string;
+  readJSONHandler('/proto/data/users.txt', 'users');
   readJSONHandler('/proto/data/plants.txt', 'plants');
   readJSONHandler('/proto/data/packages.txt', 'packages');
 }
@@ -119,6 +121,11 @@ function draw_inventory_stub(){
   plant_page_is_active = false;
   $(plant_page_div).html('');
   $(plant_controls_div).html('');
+
+  plant_details_page_is_active = false;
+  $(plant_details_page_div).html('');
+  plant_welfare_page_is_active = false;
+  $(plant_welfare_page_div).html('');
 
   package_page_is_active = false;
   $(package_page_div).html('');
@@ -137,40 +144,24 @@ function draw_inventory_stub(){
   drawAssetPage();
 }
 
-function changeAsset(){
-    assetTypeName = $("#selected_asset").val();
-}
-
-function newAsset(assetTypeName){
-  var new_asset = asset;
-
-  new_asset.unique_id = uuid_hex();
-  new_asset.type = assetTypeName;
-  new_asset.state = "Init";
-  new_asset.creation_time = parseFloat(new Date().getTime() / 1000.0);
-  new_asset.last_update_time = new_asset.creation_time;
-
-  assets.push(new_asset);
-  drawAssetPage(asset_iv);
-}
-
 var asset_div;
 var asset_page_is_active = false;
 function drawAssetPage(){
   asset_page_is_active = true;
   $(asset_div).html('');
 
-  if(global_plants && global_plants.length !== 0 && global_packages && global_packages.length !== 0){
+  if(global_plants && global_plants.length !== 0){
     assets.length = 0;
     plants = global_plants;
-    packages = global_packages;
     plants.forEach(function(plant){
       assets.push(plant);
     });
+  }
+  if(global_packages && global_packages.length !== 0){
+    packages = global_packages;
     packages.forEach(function(package){
       assets.push(package);
     });
-    //console.log(assets);
   }
 
   //var asset_caption = asset_div.appendChild(document.createElement('caption'));
@@ -210,11 +201,6 @@ function drawAssetPage(){
 
   var asset_controls = asset_div.appendChild(document.createElement('div'));
   html = '';
-  //html += 'Selected Asset: ' + '<br/><select id="selected_asset" onchange="changeAsset()"'+'>';
-  //assetTypes.forEach(function(assetType){
-  //    html += '<option value="'+ assetType.state_name + '">'+ assetType.state_name + '</option>';
-  //});
-  //html += '</select>';
 
   html += '<a href="#" onclick="drawAssetPage()" class="btn btn-success">Asset Page</a>';
   html += '<a href="#" onclick="plantPage()" class="btn btn-success">Plant Page</a>';

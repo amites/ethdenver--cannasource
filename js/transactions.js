@@ -31,6 +31,7 @@ var enumTransactionClasses = {
   INCOMPLETE: 0,
   PLANT: 1,
   PACKAGE: 2,
+  USER: 3,
 };
 var transactionClasses = [
   {
@@ -44,6 +45,10 @@ var transactionClasses = [
   },{
     state_name: 'PACKAGE',
     state_enum:  enumTransactionClasses.PACKAGE,
+    state_color: red_color
+  },{
+    state_name: 'USER',
+    state_enum:  enumTransactionClasses.USER,
     state_color: red_color
   }
 ];
