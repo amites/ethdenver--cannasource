@@ -57,9 +57,11 @@ var assetPlant = {
   creation_time: '',
   last_update_time: '',
   transaction_list: [],
-  tag_id: '',
-  lot_id: '',
+  veg_tag_id: '',
+  imm_batch_id: '',
   harvest_yield: '',
+  package_yield: '',
+  package_tag_id: '',
   state_recs: [],
   welfare_recs: [],
 };
@@ -84,14 +86,16 @@ function newPlant(){
     unique_id: uuid_hex(),
     asset_type: "PLANT",
     strain: "Strain 1",
-    locations: "Plant Room",
+    location: "Plant Room",
     state: "CREATED_PLANT",
     creation_time: parseFloat(new Date().getTime() / 1000.0),
     last_update_time: parseFloat(new Date().getTime() / 1000.0),
     transaction_list: [],
-    tag_id: uuid_hex(),
-    lot_id: uuid_hex(),
-    harvest_yield: 0,
+    veg_tag_id: '',
+    imm_batch_id: '',
+    harvest_yield: '0',
+    package_yield: '0',
+    package_tag_id: '',
     state_recs: [],
     welfare_recs: [],
   }
@@ -316,6 +320,23 @@ addEvent.watch(function(error,result){
               var state_result = false
               if(window.confirm){
                 active_asset.state = new_state_name;
+                active_asset.veg_tag_id = uuid_hex();
+                state_result = true;
+                state_rec = {
+                  state_name: new_state_name,
+                  start_time: parseFloat(new Date().getTime() / 1000.0),
+                  end_time: 0,
+                };
+              }else{
+                state_result = false;
+              }
+            }else if(new_state_name === "IMMATURE"){
+              var alert_msg = "You must assign an immature batch ID" ;
+              window.confirm(alert_msg);
+              var state_result = false
+              if(window.confirm){
+                active_asset.state = new_state_name;
+                active_asset.imm_batch_id = uuid_hex();
                 state_result = true;
                 state_rec = {
                   state_name: new_state_name,
@@ -326,8 +347,18 @@ addEvent.watch(function(error,result){
                 state_result = false;
               }
             }else if(new_state_name === "CUT_GET_WET_WEIGHT"){
-              var wet_weight = prompt("Enter Wet Weight");
+              var wet_weight = prompt("Enter Wet Yield (oz)");
               active_asset.harvest_yield = wet_weight;
+              active_asset.state = new_state_name;
+              state_result = true;
+              state_rec = {
+                state_name: new_state_name,
+                start_time: parseFloat(new Date().getTime() / 1000.0),
+                end_time: 0,
+              };
+            }else if(new_state_name === "HARVESTED"){
+              var dry_weight = prompt("Enter Dry Yield (oz)");
+              active_asset.package_yield = dry_weight;
               active_asset.state = new_state_name;
               state_result = true;
               state_rec = {
@@ -341,6 +372,7 @@ addEvent.watch(function(error,result){
                 var state_result = false
                 if(window.confirm){
                   active_asset.state = new_state_name;
+                  active_asset.package_tag_id = uuid_hex();
                   state_result = true;
                   state_rec = {
                     state_name: new_state_name,
@@ -583,8 +615,8 @@ function plantDetails(id, mode){
     html += '<a href="#" onclick="newPlant_Contract(\'' + active_plant.unique_id + '\', \''+mode+'\')" class="btn btn-success">'+plant_btn_title+'</a>';
     html += '<b>Plant Details Table</b>';
     html += '<table class="table table-bordered table-striped" id="plant_details_table">';
-    html += '<tr><th>ID/Lot</th><th>Asset Type</th><th>Creation</th><th>Currrent State</th><th>Last Update</th><th>Strain<th>Location</th><th>Tag<th>Yield</th></tr>';
-    html += '<tr><td>'+active_plant.unique_id+'<br/><b>Lot:</b>'+active_plant.lot_id+'</td><td>'+active_plant.asset_type+'</td><td>'+convertTimeLocal(active_plant.creation_time)+'</td><td>'+active_plant.state;
+    html += '<tr><th>IDs</th><th>Asset Type</th><th>Creation</th><th>Currrent State</th><th>Last Update</th><th>Strain<th>Location</th><th>Wet Yield</th><th>Dry Yield</th></tr>';
+    html += '<tr><td>'+active_plant.unique_id+'<br/><b>Batch:</b>'+active_plant.imm_batch_id+'<br/>Veg:'+active_plant.veg_tag_id+'<br/>Pkg:'+active_plant.package_tag_id+'</td><td>'+active_plant.asset_type+'</td><td>'+convertTimeLocal(active_plant.creation_time)+'</td><td>'+active_plant.state;
     var id = "selected_plant_state_2_" + active_plant.unique_id;
     //console.log(id);
 
@@ -599,7 +631,7 @@ function plantDetails(id, mode){
     html += '</select>';
     html += '</td><td>'+convertTimeLocal(active_plant.last_update_time)+'</td>';
     html += '<td>'+active_plant.strain+'</td><td>'+active_plant.location+'</td>';
-    html += '<td>'+active_plant.tag_id+'</td><td>'+'0'+'</td>';
+    html += '</td><td>'+active_plant.harvest_yield+'</td><td>'+active_plant.package_yield+'</td>';
     html += '</tr>';
 
     html += '<tr><th>State Records</th><th>Start</th><th>End</th><th>Duration (s)</th></tr>';
