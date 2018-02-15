@@ -3,9 +3,10 @@ var enumPlantStates = {
   IMMATURE: 1,
   VEGETATIVE_TAGGED: 2,
   FLOWERING: 3,
-  HARVESTED: 4,
-  PACKAGED_TAGGED: 5,
-  DISPOSED: 6,
+  CUT_GET_WET_WEIGHT: 4,
+  HARVESTED: 5,
+  PACKAGED_TAGGED: 6,
+  DISPOSED: 7,
 }
 
 var plantStates = [
@@ -21,6 +22,9 @@ var plantStates = [
     },{
       state_name: 'FLOWERING',
       state_enum:  enumPlantStates.FLOWERING
+    },{
+      state_name: 'CUT_GET_WET_WEIGHT',
+      state_enum:  enumPlantStates.CUT_GET_WET_WEIGHT
     },{
       state_name: 'HARVESTED',
       state_enum:  enumPlantStates.HARVESTED
@@ -114,11 +118,11 @@ addEvent.watch(function(error,result){
     console.log("AddPlantAssetEvent ", result, " tx_hash: ", result.transactionHash);
     console.log("AddPlantAssetEvent args ",result.args.assetInfo);
     var result_elems = result.args.assetInfo.split(",");
-    //var elem_index = 0
-    //result_elems.forEach(function(elem){
-    // console.log(elem_index,":",elem);
-    // elem_index++;
-    //});
+    var elem_index = 0
+    result_elems.forEach(function(elem){
+     console.log(elem_index,":",elem);
+     elem_index++;
+    });
     var active_asset = plants.find(function(plant){
       return plant.unique_id === result_elems[3];
     });
@@ -306,12 +310,55 @@ addEvent.watch(function(error,result){
           current_state_rec.end_time = parseFloat(new Date().getTime() / 1000.0);
 
           if(result_elems[10] === "ALLOWED"){
-            active_asset.state = new_state_name;
-            state_rec = {
-              state_name: new_state_name,
-              start_time: parseFloat(new Date().getTime() / 1000.0),
-              end_time: 0,
-            };
+            if(new_state_name === "VEGETATIVE_TAGGED"){
+              var alert_msg = "The Plant must be at least 8 in tall\n or container greater than 2 in \n AND you must assign a unique RFID tag" ;
+              window.confirm(alert_msg);
+              var state_result = false
+              if(window.confirm){
+                active_asset.state = new_state_name;
+                state_result = true;
+                state_rec = {
+                  state_name: new_state_name,
+                  start_time: parseFloat(new Date().getTime() / 1000.0),
+                  end_time: 0,
+                };
+              }else{
+                state_result = false;
+              }
+            }else if(new_state_name === "CUT_GET_WET_WEIGHT"){
+              var wet_weight = prompt("Enter Wet Weight");
+              active_asset.harvest_yield = wet_weight;
+              active_asset.state = new_state_name;
+              state_result = true;
+              state_rec = {
+                state_name: new_state_name,
+                start_time: parseFloat(new Date().getTime() / 1000.0),
+                end_time: 0,
+              };
+            }else if(new_state_name === "PACKAGED_TAGGED"){
+                var alert_msg = "You may package buds or shake of the same strain \n AND you must assign a unique RFID tag" ;
+                window.confirm(alert_msg);
+                var state_result = false
+                if(window.confirm){
+                  active_asset.state = new_state_name;
+                  state_result = true;
+                  state_rec = {
+                    state_name: new_state_name,
+                    start_time: parseFloat(new Date().getTime() / 1000.0),
+                    end_time: 0,
+                  };
+                }else{
+                  state_result = false;
+                }
+            }else{  // allow these trans without user confirmation
+              active_asset.state = new_state_name;
+              state_result = true;
+              state_rec = {
+                state_name: new_state_name,
+                start_time: parseFloat(new Date().getTime() / 1000.0),
+                end_time: 0,
+              };
+            }
           }else{
             state_rec = {
               state_name: active_asset.state,
@@ -457,10 +504,10 @@ function provenancePlantPage(plant_id){
           var result_stg = '';
           var result_index = 0;
           var txee_user = '';
-          //result_items.forEach(function(item){
-          //  console.log(result_index,":",item);
-          //  result_index++;
-          //});
+          result_items.forEach(function(item){
+            console.log(result_index,":",item);
+            result_index++;
+          });
           html += '<tr><td colspan ="12">'+'tx_hash: '+tx.tx_hash+'<br/>time: '+convertTimeLocal(tx.tx_time)+'<br/>Asset: '+ tx.asset_id;
           html += '<br/>' + '<button id="' + tx.tx_hash + '" class="btn btn" onclick="getTransByTxID(\'' + tx.tx_hash + '\')">Get Ledger Tx</button>'+'</td></tr>';
           if(result_items[0] === "CreateAsset"){
@@ -468,7 +515,7 @@ function provenancePlantPage(plant_id){
               return user.unique_id === result_items[5];
             });
             //var role_name = findStateName(userRoles,parseInt(txee_user.role));
-            html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+'role_name'+'</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[8]) +'">Result<br/>'+result_items[8]+'</td></tr>';
+            html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+'role_name'+'</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[7]) +'">Result<br/>'+result_items[10]+'</td></tr>';
           }else if(result_items[0] === "SetPlantState" || result_items[0] === "TestSetPlantState"){
             txee_user = users.find(function(user){
               return user.unique_id === result_items[8];

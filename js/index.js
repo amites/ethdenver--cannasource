@@ -114,6 +114,8 @@ function readJSON(){
   document.getElementById("asset_op_info").value = op_string;
   readJSONHandler('/proto/data/users.txt', 'users');
   readJSONHandler('/proto/data/plants.txt', 'plants');
+
+  // ordering hack - this read has to be last in order for the drawAssetPage() to work "off async" ....
   readJSONHandler('/proto/data/packages.txt', 'packages');
 }
 
@@ -146,19 +148,29 @@ function draw_inventory_stub(){
 
 var asset_div;
 var asset_page_is_active = false;
-function drawAssetPage(){
+function drawAssetPage(mode){
   asset_page_is_active = true;
   $(asset_div).html('');
 
-  if(global_plants && global_plants.length !== 0){
-    assets.length = 0;
-    plants = global_plants;
+  if(mode === 'reload'){
+    asset.length = 0;
+    if(global_plants && global_plants.length !== 0){
+      plants = global_plants;
+      plants.forEach(function(plant){
+        assets.push(plant);
+      });
+    }
+    if(global_packages && global_packages.length !== 0){
+      packages = global_packages;
+      packages.forEach(function(package){
+        assets.push(package);
+      });
+    }
+  }else{
+    assets.length = 0; 
     plants.forEach(function(plant){
       assets.push(plant);
     });
-  }
-  if(global_packages && global_packages.length !== 0){
-    packages = global_packages;
     packages.forEach(function(package){
       assets.push(package);
     });

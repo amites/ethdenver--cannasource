@@ -39,6 +39,8 @@ function readJSONHandler(url, type){
           console.log("global_packages: ",global_packages);
           op_string = "Asset Load Complete";
           document.getElementById("asset_op_info").value = op_string;
+          // order hack !
+          drawAssetPage('reload');
         }else if(type === 'users'){
           global_users = JSON.parse(data);
           console.log("global_users: ",global_users);

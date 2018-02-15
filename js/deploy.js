@@ -8,4 +8,4 @@ var abi = JSON.parse('[{"constant":true,"inputs":[{"name":"","type":"uint256"}],
 MITSContract = web3.eth.contract(abi);
 
 // In your nodejs console, execute contractInstance.address to get the address at which the contract is deployed and change the line below to use your deployed address
-var contractInstance = MITSContract.at('0x2ce30b4a2ad3f988ade3ff2996c9a69bae4339b8');
+var contractInstance = MITSContract.at('0x1b2c4d1187a7fc4842789594d372a012369d66c6');
