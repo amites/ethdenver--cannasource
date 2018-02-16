@@ -49,7 +49,6 @@ contract MITSContract {
     string ayt
   );
 
-
   bytes32[] public plantStateList;
   uint256 plantStateIndex = 0;
 

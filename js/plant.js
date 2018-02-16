@@ -7,7 +7,7 @@ var enumPlantStates = {
   HARVESTED: 5,
   PACKAGED_TAGGED: 6,
   DISPOSED: 7,
-}
+};
 
 var plantStates = [
     {

@@ -2,7 +2,7 @@ var enumAssetTypes = {
   UNKNOWN: 0,
   PLANT: 1,
   PACKAGE: 2,
-}
+};
 
 var assetTypes = [
     {
@@ -77,10 +77,10 @@ function getTrans(){
   var trans_hash = document.getElementById('result_field').value.toString();
   web3.eth.getTransaction(trans_hash.toString(), function(error, result){
        if(!error)
-         console.log("result: ",result)
+         console.log("result: ",result);
        else
           console.error("error: ",error);
-  })
+  });
 }
 
 function getTransByTxID(trans_hash){
@@ -153,7 +153,7 @@ function drawAssetPage(mode){
   $(asset_div).html('');
 
   if(mode === 'reload'){
-    asset.length = 0;
+    assets.length = 0;
     if(global_plants && global_plants.length !== 0){
       plants = global_plants;
       plants.forEach(function(plant){
@@ -167,7 +167,7 @@ function drawAssetPage(mode){
       });
     }
   }else{
-    assets.length = 0; 
+    assets.length = 0;
     plants.forEach(function(plant){
       assets.push(plant);
     });
@@ -191,7 +191,7 @@ function drawAssetPage(mode){
 
   html += '<tr><th>No.</th><th>ID</th><th>Creation</th><th>Type</th><th>Currrent State</th><th>Last Update</th></tr>'; //'<th>Details</th></tr>';  // Type, ID, creation, state, last update
 
-  var plant_count = 0
+  var plant_count = 0;
   var package_count = 0;
   var count = '';
   if(assets.length !== 0){
@@ -205,7 +205,7 @@ function drawAssetPage(mode){
       }
       html += '<tr><td>'+count+'</td><td>'+asset.unique_id+'</td><td>'+convertTimeLocal(asset.creation_time)+'</td><td>'+asset.asset_type+'</td><td>'+asset.state+'</td><td>'+convertTimeLocal(asset.last_update_time)+'</td>';
       //html += '<td><button id="' + asset.unique_id + '" class="btn btn-primary" onclick="provenancePage(\'' + asset.unique_id + '\')"><span class="glyphicon glyphicon-tint"></span>&nbsp;Details</button></td>';
-      html += '</tr>'
+      html += '</tr>';
     });
   }
   html += '</table>';

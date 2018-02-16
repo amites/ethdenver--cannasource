@@ -3,7 +3,7 @@ var enumPackageStates = {
   INVENTORY: 1,
   TRANSFERRING: 2,
   DISPOSED: 3,
-}
+};
 
 var packageStates = [
     {
@@ -49,7 +49,7 @@ function newPackage(){
     creation_time: parseFloat(new Date().getTime() / 1000.0),
     last_update_time: parseFloat(new Date().getTime() / 1000.0),
     transaction_list: [],
-  }
+};
   attempt_stg = "CreateAsset,Package,ID," + newPackage.unique_id + ",TXEE," + globalUser.unique_id;
   transaction_summary = {
     tx_hash: '',
@@ -70,7 +70,7 @@ addEvent.watch(function(error,result){
     console.log("AddPackageAssetEvent ", result, " tx_hash: ", result.transactionHash);
     console.log("AddPackageAssetEvent args ",result.args.assetInfo);
     var result_elems = result.args.assetInfo.split(",");
-    var elem_index = 0
+    var elem_index = 0;
     result_elems.forEach(function(elem){
      console.log(elem_index,":",elem);
     });
@@ -165,7 +165,7 @@ addEvent.watch(function(error,result){
         //console.log(process_category, " from :", previous_state, " to: ",new_state_name);
         if(active_asset && active_asset.transaction_list){
             active_asset.state = new_state_name;
-            active_asset.last_update_time = parseFloat(new Date().getTime() / 1000.0);;
+            active_asset.last_update_time = parseFloat(new Date().getTime() / 1000.0);
             var currentTrans = active_asset.transaction_list.find(function(trans){
               return trans.attempt.startsWith("SetPackageState") && trans.result === "Incomplete";
             });
@@ -179,7 +179,7 @@ addEvent.watch(function(error,result){
             console.log(active_asset);
             package_op_string = "State Transition Complete";
             document.getElementById("package_op_info").value = package_op_string;
-            provenancePackagePage(active_asset.unique_id)
+            provenancePackagePage(active_asset.unique_id);
         }else{
             console.log("No active_asset");
         }
