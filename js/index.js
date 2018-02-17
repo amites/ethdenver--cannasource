@@ -140,6 +140,9 @@ function draw_inventory_stub(){
   $(user_page_div).html('');
   $(user_controls_div).html('');
 
+  user_details_page_is_active = false;
+  $(user_details_page_div).html('');
+
   asset_page_is_active = true;
   $(asset_div).html('');
 

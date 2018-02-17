@@ -34,7 +34,7 @@ addEvent.watch(function(error,result){
     console.log("UpdateUserEvent ", result, " tx_hash: ", result.transactionHash);
     console.log("UpdateUserEvent args ",result.args.userInfo);
     var result_elems = result.args.userInfo.split(",");
-    var elem_index = 0
+    var elem_index = 0;
     result_elems.forEach(function(elem){
      console.log(elem_index,":",elem);
      elem_index++;
@@ -132,7 +132,6 @@ function userDetails(id, mode){
       return user.unique_id === id;
     });
   }
-
 
   user_details_page_is_active = true;
   $(user_details_page_div).html('');
