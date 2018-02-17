@@ -10,7 +10,7 @@ function writeJSONHandler(url, js_object){
     success: success
   });
   function success(msg) {
-    //console.log("msg: ", msg);
+    console.log("msg: ", msg);
     console.log("write ok");
   }
 }
