@@ -298,7 +298,8 @@ function provenancePackagePage(package_id){
             return user.unique_id === result_items[5];
           });
           //var role_name = findStateName(userRoles,parseInt(txee_user.role));
-          html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+'role_name'+'</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[7]) +'">Result<br/>'+result_items[7]+'</td></tr>';
+          html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+'role_name';
+          html += '</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[7]) +'">Result<br/>'+result_items[7]+'</td></tr>';
         }else if(result_items[0] === "SetPackageState"){
           txee_user = users.find(function(user){
             return user.unique_id === result_items[8];

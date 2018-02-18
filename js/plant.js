@@ -98,7 +98,7 @@ function newPlant(){
     package_tag_id: '',
     state_recs: [],
     welfare_recs: [],
-  }
+};
   attempt_stg = "CreateAsset,Plant,ID," + new_assetPlant.unique_id + ",TXEE," + globalUser.unique_id;
   transaction_summary = {
     tx_hash: '',
@@ -122,7 +122,7 @@ addEvent.watch(function(error,result){
     console.log("AddPlantAssetEvent ", result, " tx_hash: ", result.transactionHash);
     console.log("AddPlantAssetEvent args ",result.args.assetInfo);
     var result_elems = result.args.assetInfo.split(",");
-    var elem_index = 0
+    var elem_index = 0;
     result_elems.forEach(function(elem){
      console.log(elem_index,":",elem);
      elem_index++;
@@ -317,7 +317,7 @@ addEvent.watch(function(error,result){
             if(new_state_name === "VEGETATIVE_TAGGED"){
               var alert_msg = "The Plant must be at least 8 in tall\n or container greater than 2 in \n AND you must assign a unique RFID tag" ;
               window.confirm(alert_msg);
-              var state_result = false
+              var state_result = false;
               if(window.confirm){
                 active_asset.state = new_state_name;
                 active_asset.veg_tag_id = uuid_hex();
@@ -333,7 +333,7 @@ addEvent.watch(function(error,result){
             }else if(new_state_name === "IMMATURE"){
               var alert_msg = "You must assign an immature batch ID" ;
               window.confirm(alert_msg);
-              var state_result = false
+              var state_result = false;
               if(window.confirm){
                 active_asset.state = new_state_name;
                 active_asset.imm_batch_id = uuid_hex();
@@ -350,7 +350,7 @@ addEvent.watch(function(error,result){
               var wet_weight = prompt("Enter Wet Yield (oz)");
               active_asset.harvest_yield = wet_weight;
               active_asset.state = new_state_name;
-              state_result = true;
+              var state_result = true;
               state_rec = {
                 state_name: new_state_name,
                 start_time: parseFloat(new Date().getTime() / 1000.0),
@@ -360,7 +360,7 @@ addEvent.watch(function(error,result){
               var dry_weight = prompt("Enter Dry Yield (oz)");
               active_asset.package_yield = dry_weight;
               active_asset.state = new_state_name;
-              state_result = true;
+              var state_result = true;
               state_rec = {
                 state_name: new_state_name,
                 start_time: parseFloat(new Date().getTime() / 1000.0),
@@ -369,7 +369,7 @@ addEvent.watch(function(error,result){
             }else if(new_state_name === "PACKAGED_TAGGED"){
                 var alert_msg = "You may package buds or shake of the same strain \n AND you must assign a unique RFID tag" ;
                 window.confirm(alert_msg);
-                var state_result = false
+                var state_result = false;
                 if(window.confirm){
                   active_asset.state = new_state_name;
                   active_asset.package_tag_id = uuid_hex();
@@ -384,7 +384,7 @@ addEvent.watch(function(error,result){
                 }
             }else{  // allow these trans without user confirmation
               active_asset.state = new_state_name;
-              state_result = true;
+              var state_result = true;
               state_rec = {
                 state_name: new_state_name,
                 start_time: parseFloat(new Date().getTime() / 1000.0),
@@ -547,7 +547,8 @@ function provenancePlantPage(plant_id){
               return user.unique_id === result_items[5];
             });
             //var role_name = findStateName(userRoles,parseInt(txee_user.role));
-            html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+'role_name'+'</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[7]) +'">Result<br/>'+result_items[10]+'</td></tr>';
+            html += '<tr><td colspan ="3" >' + 'Tx type<br/>' + result_items[0] +'<br/>'+result_items[1]+":"+result_items[2]+'</td><td colspan ="3">Product<br/>'+result_items[3]+ '</td><td colspan ="3">'+result_items[4]+'<br/>'+result_items[5]+'<br/>'+'role_name';
+            html += '</td><td colspan="3" bgcolor="'+ findStateColor(transactionResultStates, result_items[7]) +'">Result<br/>'+result_items[10]+'</td></tr>';
           }else if(result_items[0] === "SetPlantState" || result_items[0] === "TestSetPlantState"){
             txee_user = users.find(function(user){
               return user.unique_id === result_items[8];
@@ -617,7 +618,7 @@ function plantDetails(id, mode){
     html += '<table class="table table-bordered table-striped" id="plant_details_table">';
     html += '<tr><th>IDs</th><th>Asset Type</th><th>Creation</th><th>Currrent State</th><th>Last Update</th><th>Strain<th>Location</th><th>Wet Yield</th><th>Dry Yield</th></tr>';
     html += '<tr><td>'+active_plant.unique_id+'<br/><b>Batch:</b>'+active_plant.imm_batch_id+'<br/>Veg:'+active_plant.veg_tag_id+'<br/>Pkg:'+active_plant.package_tag_id+'</td><td>'+active_plant.asset_type+'</td><td>'+convertTimeLocal(active_plant.creation_time)+'</td><td>'+active_plant.state;
-    var id = "selected_plant_state_2_" + active_plant.unique_id;
+    var id = "selected_plant_state_2_" + active_plant.unique_id
     //console.log(id);
 
     html += '<br/><select id="'+ id + '" onchange="changePlantState_2(\'' + active_plant.unique_id + '\')"'+'>';
@@ -637,7 +638,7 @@ function plantDetails(id, mode){
     html += '<tr><th>State Records</th><th>Start</th><th>End</th><th>Duration (s)</th></tr>';
     if(active_plant.state_recs && active_plant.state_recs.length > 0){
       active_plant.state_recs.forEach(function(state_rec){
-        var end_time = 'In State'
+        var end_time = 'In State';
         var duration = 'NA';
         if(state_rec.end_time > 0){
           end_time = convertTimeLocal(state_rec.end_time);
@@ -656,7 +657,7 @@ function plantDetails(id, mode){
         if(last_time !== 0){
           html += '<td>'+ (welfare_rec.last_update_time - last_time).toFixed(0) +'</td></tr>';
         }else{
-          html += '<td>'+ '0' +'</td></tr>'
+          html += '<td>'+ '0' +'</td></tr>';
         }
 
         last_time = welfare_rec.last_update_time;
@@ -671,8 +672,8 @@ function updatePlantWelfare(id){
     var active_plant = plants.find(function(plant){
       return plant.unique_id === id;
     });
-    var height = document.getElementById("welfare_height").value
-    var notes = document.getElementById("welfare_notes").value
+    var height = document.getElementById("welfare_height").value;
+    var notes = document.getElementById("welfare_notes").value;
     welfare_rec = {
       height: height,
       notes: notes,
@@ -706,7 +707,7 @@ function newWelfareRec(id){
   html += '<b>Plant Welfare Table</b>';
   html += '<table class="table table-bordered table-striped" id="plant_details_table">';
   html += '<tr><th>ID</th><th>Height</th><th>Notes</th><th>Time</th></tr>';
-  '<input id="plant_op_info" type="text" name="Operation">';
+  //html += '<input id="plant_op_info" type="text" name="Operation">';
   html += '<tr><td>'+active_plant.unique_id+'</td><td> <input id="welfare_height" type="text">'+welfare_rec.height+'</td><td> <input id="welfare_notes" type="text">'+welfare_rec.notes+'</td><td>'+convertTimeLocal(welfare_rec.last_update_time)+'</td></tr>';
   html += '</table>';
   $(plant_welfare_page_div).append(html);
