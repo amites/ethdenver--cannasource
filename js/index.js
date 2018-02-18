@@ -108,8 +108,14 @@ function ayt(){
 
 function writeJSON(){
   writeJSONHandler('/proto/data/users.txt', users);
+  //var bogus_plants = [];
   writeJSONHandler('/proto/data/plants.txt', plants);
-  writeJSONHandler('/proto/data/packages.txt', packages);
+  var batch_packages = packages.filter(function(pkg){
+     return pkg.asset_type === "BATCH_PACKAGE";
+  });
+  console.log(batch_packages);
+  //var bogus_packages = [];
+  writeJSONHandler('/proto/data/packages.txt', batch_packages);
 }
 
 function readJSON(){
@@ -233,12 +239,29 @@ function drawAssetPage(mode){
     });
   }
   html += '</table>';
+  
   // $(asset_table).append(html);
   $(asset_div).append(html);
 
   var rowObj = document.createElement('div');
   rowObj.className = 'row-btns';
   asset_div.appendChild(rowObj);
+
+/*
+  var asset_controls = asset_div.appendChild(document.createElement('div'));
+  html = '';
+
+  html += '<a href="#" onclick="drawAssetPage()" class="btn btn-success">Asset Page</a>';
+  html += '<a href="#" onclick="plantPage()" class="btn btn-success">Plant Page</a>';
+  html += '<a href="#" onclick="packagePage()" class="btn btn-success">Package Page</a>';
+  //html += '<a href="#" onclick="facilityPage()" class="btn btn-success">Facility Page</a>';
+  html += '<a href="#" onclick="userPage()" class="btn btn-success">User Page</a>';
+  html += '<a href="#" onclick="writeJSON()" class="btn btn-danger">Save Assets</a>';
+  html += '<a href="#" onclick="readJSON()" class="btn btn-danger">Load Assets</a>';
+  html += '<a href="#" onclick="stateInfoPage()" class="btn btn-primary">Domain Info</a>';
+  html += '<a href="#" onclick="ayt()" class="btn btn-info">AYT</a>';
+  $(asset_controls).append(html);
+*/
 
   document.getElementById("asset_op_info").value = op_string;
 }

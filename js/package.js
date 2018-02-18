@@ -1,27 +1,27 @@
 var enumPackageStates = {
-  CREATED_PACKAGE: 0,
+  CREATED_BATCH_PACKAGE: 0,
   INVENTORY: 1,
-  TRANSFERRING: 2,
+  ADDED_TO_MANIFEST: 2,
   DISPOSED: 3,
 };
 
 var packageStates = [
     {
-      state_name: 'CREATED_PACKAGE',
-      state_enum:  enumPackageStates.CREATED_PACKAGE
+      state_name: 'CREATED_BATCH_PACKAGE',
+      state_enum:  enumPackageStates.CREATED_BATCH_PACKAGE
     },{
       state_name: 'INVENTORY',
       state_enum:  enumPackageStates.INVENTORY
     },{
-      state_name: 'TRANSFERRING',
-      state_enum:  enumPackageStates.TRANSFERRING
+      state_name: 'ADDED_TO_MANIFEST',
+      state_enum:  enumPackageStates.ADDED_TO_MANIFEST
     },{
       state_name: 'DISPOSED',
       state_enum:  enumPackageStates.DISPOSED
     }
 ];
 
-var assetPackage = {
+var package = {
   unique_id: '',
   asset_type: '',
   type: '',
@@ -31,6 +31,7 @@ var assetPackage = {
   creation_time: '',
   last_update_time: '',
   transaction_list: [],
+  plant_packages_list: [],
 };
 
 var packages = [];
@@ -38,30 +39,53 @@ var packages = [];
 var package_op_string = "No Pending Op";
 
 function newPackage(){
-  var new_assetPackage = {
-    unique_id: uuid_hex(),
-    asset_type: "PACKAGE",
-    type: "Buds",
-    quantity: "1 oz",
-    strain: "Strain 1",
-    location: "Room 2",
-    state: "CREATED_PACKAGE",
-    creation_time: parseFloat(new Date().getTime() / 1000.0),
-    last_update_time: parseFloat(new Date().getTime() / 1000.0),
-    transaction_list: [],
-};
-  attempt_stg = "CreateAsset,Package,ID," + newPackage.unique_id + ",TXEE," + globalUser.unique_id;
-  transaction_summary = {
-    tx_hash: '',
-    tx_time: '',
-    asset_id: '',
-    attempt: attempt_stg,
-    result: 'Incomplete',
-    tx_class: 'PACKAGE',
-    tx_ee: globalUser.unique_id,
-  };
-  new_assetPackage.transaction_list.push(transaction_summary);
-  return (new_assetPackage);
+    var pkg_plants = plants.filter(function(plant){
+        return plant.state === "PACKAGED_TAGGED";
+    });
+    if(pkg_plants.length === 0){
+        alert('No Plant Packages Selected to Batch');
+        return;
+    }
+    var new_package = {
+        unique_id: uuid_hex(),
+        asset_type: "BATCH_PACKAGE",
+        type: "Buds",
+        quantity: '',
+        strain: "Strain 1",
+        location: "Room 2",
+        state: "CREATED_BATCH_PACKAGE",
+        creation_time: parseFloat(new Date().getTime() / 1000.0),
+        last_update_time: parseFloat(new Date().getTime() / 1000.0),
+        transaction_list: [],
+        plant_packages_list: [],
+    };
+
+    pkg_plants.forEach(function(pkg){
+        var id = 'include_'+pkg.unique_id;
+        if(document.getElementById(id)){
+            console.log(pkg.unique_id," include: ", document.getElementById(id).checked);
+            if(document.getElementById(id).checked){
+                pkg.state = "ADDED_TO_BATCH";
+                console.log("packaged_plant: ",pkg);
+                new_package.plant_packages_list.push(pkg);
+                // stage state trans each pkg
+            }
+        }
+    });
+    console.log(new_package);
+
+    attempt_stg = "CreateAsset,Package,ID," + new_package.unique_id + ",TXEE," + globalUser.unique_id;
+    transaction_summary = {
+        tx_hash: '',
+        tx_time: '',
+        asset_id: '',
+        attempt: attempt_stg,
+        result: 'Incomplete',
+        tx_class: 'PACKAGE',
+        tx_ee: globalUser.unique_id,
+    };
+    new_package.transaction_list.push(transaction_summary);
+    return (new_package);
 }
 
 var addEvent = contractInstance.AddPackageAssetEvent();
@@ -89,6 +113,11 @@ addEvent.watch(function(error,result){
           console.log(active_asset);
           package_op_string = "Add Package Complete";
           document.getElementById("package_op_info").value = package_op_string;
+          //active_asset.plant_packages_list.forEach(function(plant){
+            //queued_plant_state_list.length = 0;
+            //queued_plant_state_list.push(plant);
+            //testSetPlantState(queued_plant_state_list[0], "ADDED_TO_BATCH");
+          //});
           packagePage();
       }else{
           console.log("No active_asset.transaction_list");
@@ -211,10 +240,41 @@ function newPackage_Contract(){
   package_op_string = "Pending Add Package";
   document.getElementById("package_op_info").value = package_op_string;
   var new_package = newPackage();
-  packages.push(new_package);
-  console.log(new_package, " ", new_package);
-  contractInstance.addPackageAsset(new_package.unique_id, "CreateAsset", "Package", globalUser.unique_id, {from: web3.eth.accounts[0], gas:4000000}, function(result) {
-  });
+  if(new_package){
+      packages.push(new_package);
+      console.log(new_package, " ", new_package);
+      contractInstance.addPackageAsset(new_package.unique_id, "CreateAsset", "Package", globalUser.unique_id, {from: web3.eth.accounts[0], gas:4000000}, function(result) {
+      });
+  }
+  else{
+      console.log("valid new_package not returned");
+  }
+}
+
+var manifest = {
+    unique_id: '',
+    packages_list: [],
+    orgination: '',
+    destination: '',
+};
+
+function newManifest_Contract(){
+    var new_manifest = {
+        unique_id: uuid_hex(),
+        packages_list: [],
+        orgination: 'Facility 1',
+        destination: 'Facilty 2',
+    };
+    packages.forEach(function(pkg){
+        var id = 'include_'+pkg.unique_id;
+        if(document.getElementById(id)){
+            console.log(pkg.unique_id," include: ", document.getElementById(id).checked);
+            if(document.getElementById(id).checked){
+                new_manifest.packages_list.push(pkg);
+            }
+        }
+    });
+    console.log(new_manifest);
 }
 
 function changePackageState(id){
@@ -241,6 +301,10 @@ function changePackageState(id){
 function draw_package_stub(){
     package_provenance_page_is_active = false;
     $(package_provenance_page_div).html('');
+
+    package_details_page_is_active = false;
+    $(package_details_page_div).html('');
+
     //package_page_is_active = false;
     //$(package_page_div).html('');
     //$(package_controls_div).html('');
@@ -315,6 +379,31 @@ function provenancePackagePage(package_id){
   $(package_provenance_page_div).append(html);
 }
 
+var package_details_page_div;
+var packge_details_page_active = false;
+function detailsPackagePage(id){
+    packge_details_page_active = true;
+    $(package_details_page_div).html('');
+    var package = packages.find(function(package){
+        return package.unique_id === id;
+    });
+    var count = 0;
+    html = '<br/><button class="btn btn-danger"onclick="draw_package_stub()" >Go Back</button>';
+    html += '<b>Batch Package Details Table</b>';
+    html += '<table class="table table-bordered table-striped" id="package_details_table">';
+    html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Package Type</th><th>Currrent State</th><th>Last Update</th></tr>';
+    html += '<tr><td>'+(++count)+'</td><td>'+package.unique_id+'</td><td>'+package.asset_type+'</td><td>'+convertTimeLocal(package.creation_time)+'</td><td>'+package.type+'</td><td>'+package.state;
+    html += '</td><td>'+convertTimeLocal(package.last_update_time)+'</td>';
+    html += '</tr>';
+    package.plant_packages_list.forEach(function(plant){
+        html += '<tr><td>'+(++count)+'</td><td>'+plant.unique_id+'</td><td>'+plant.asset_type+'</td><td>'+convertTimeLocal(plant.creation_time)+'</td><td>'+plant.package_type+'</td><td>'+plant.state;
+        html += '</td><td>'+convertTimeLocal(package.last_update_time)+'</td>';
+        html += '</tr>';
+    });
+    html += '</table>';
+    $(package_details_page_div).append(html);
+}
+
 var package_page_div;
 var package_page_is_active = false;
 var package_controls_div;
@@ -343,7 +432,28 @@ function packagePage(){
   html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Package Type</th><th>Currrent State</th><th>Last Update</th><th>Details</th></tr>';  // Type, ID, creation, state, last update
 
   var count = 0;
-  packages.forEach(function(package){
+  var pkg_plants = plants.filter(function(plant){
+      return plant.state === "PACKAGED_TAGGED";
+  });
+  console.log(pkg_plants);
+  pkg_plants.forEach(function(plant){
+    html += '<tr><td>'+(++count)+'</td><td>'+plant.unique_id+'</td><td>'+plant.asset_type+'</td><td>'+convertTimeLocal(plant.creation_time)+'</td><td>'+plant.package_type+'</td><td>'+plant.state;
+    html += '</select>';
+    html += '</td><td>'+convertTimeLocal(plant.last_update_time)+'</td>';
+    html += '<td><input type="checkbox" id="include_' + plant.unique_id + '"></td>';
+    html += '</tr>';
+    });
+    html += '</table>';
+  html += '<b>Batch Packages Table</b>';
+  html += '<input id="package_op_info" type="text name="Operation">';
+  html += '<table class="table table-bordered table-striped" id="package_table">';
+  html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Package Type</th><th>Currrent State</th><th>Last Update</th><th>Details</th><th>Select</th></tr>';
+
+  var batch_packages = packages.filter(function(package){
+     return package.asset_type === "BATCH_PACKAGE";
+  });
+
+  batch_packages.forEach(function(package){
     html += '<tr><td>'+(++count)+'</td><td>'+package.unique_id+'</td><td>'+package.asset_type+'</td><td>'+convertTimeLocal(package.creation_time)+'</td><td>'+package.type+'</td><td>'+package.state;
 
     var id = "selected_package_state_" + package.unique_id;
@@ -357,16 +467,26 @@ function packagePage(){
         html += '<option value="'+ packageState.state_name + '">'+ packageState.state_name + '</option>';
       }
     });
-
     html += '</select>';
+
     html += '</td><td>'+convertTimeLocal(package.last_update_time)+'</td>';
-    html += '<td><button id="packagedetails_' + package.unique_id + '" class="btn btn-primary" onclick="provenancePackagePage(\'' + package.unique_id + '\')"><span class="glyphicon glyphicon-tint"></span>&nbsp;Provenance</button>';
+    html += '<td><button id="packageprovenance_' + package.unique_id + '" class="btn btn-primary" onclick="provenancePackagePage(\'' + package.unique_id + '\')"><span class="glyphicon glyphicon-tint"></span>&nbsp;Provenance</button></td>';
+    html += '<td><button id="packagedetails_' + package.unique_id + '" class="btn btn-info" onclick="detailsPackagePage(\'' + package.unique_id + '\')"><span class="glyphicon glyphicon-check"></span>&nbsp;Details</button></td>';
     html += '</tr>';
   });
   html += '</table>';
   $(package_page_div).append(html);
 
-  document.getElementById("package_op_info").value = package_op_string;
+// TODO: REVIEW
+// document.getElementById("package_op_info").value = package_op_string;
+  html = '';
+  html += '<a href="#" onclick="newPackage_Contract()" class="btn btn-success">Add Package</a>';
+  //html += '<a href="#" onclick="newManifest_Contract()" class="btn btn-success">Add Manifest</a>';
+  html += '<a href="#" onclick="getPackageStates()" class="btn btn-info">List Package States</a>';
+  $(package_controls_div).append(html);
+  if(document.getElementById("package_op_info")){
+      document.getElementById("package_op_info").value = package_op_string;
+  }
 }
 
 $(document).ready(function() {
@@ -377,6 +497,9 @@ $(document).ready(function() {
 
     package_provenance_page_div = app_container_top.appendChild(document.createElement('div'));
     package_provenance_page_div.classList.add('table-responsive');
+
+    package_details_page_div = app_container_top.appendChild(document.createElement('div'));
+    package_details_page_div.classList.add('table-responsive');
 
     var make_packages = false;
     if(make_packages){

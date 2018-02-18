@@ -17,6 +17,8 @@ var userRoles = [
     }
 ];
 
+// group_type
+// admin 
 var user = {
   unique_id: '',
   role: '',

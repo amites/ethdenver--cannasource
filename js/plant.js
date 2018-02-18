@@ -6,7 +6,8 @@ var enumPlantStates = {
   CUT_GET_WET_WEIGHT: 4,
   HARVESTED: 5,
   PACKAGED_TAGGED: 6,
-  DISPOSED: 7,
+  ADDED_TO_BATCH: 7,
+  DISPOSED: 8,
 };
 
 var plantStates = [
@@ -31,6 +32,9 @@ var plantStates = [
     },{
       state_name: 'PACKAGED_TAGGED',
       state_enum:  enumPlantStates.PACKAGED_TAGGED
+    },{
+      state_name: 'ADDED_TO_BATCH',
+      state_enum:  enumPlantStates.ADDED_TO_BATCH
     },{
       state_name: 'DISPOSED',
       state_enum:  enumPlantStates.DISPOSED
@@ -62,11 +66,14 @@ var assetPlant = {
   harvest_yield: '',
   package_yield: '',
   package_tag_id: '',
+  package_type: '',
   state_recs: [],
   welfare_recs: [],
 };
 
 var plants = [];
+
+//var queued_plant_state_list = [];
 
 var plant_op_string = "No Pending Op";
 
@@ -96,6 +103,7 @@ function newPlant(){
     harvest_yield: '0',
     package_yield: '0',
     package_tag_id: '',
+    package_type: '',
     state_recs: [],
     welfare_recs: [],
 };
@@ -373,6 +381,7 @@ addEvent.watch(function(error,result){
                 if(window.confirm){
                   active_asset.state = new_state_name;
                   active_asset.package_tag_id = uuid_hex();
+                  active_asset.package_type = 'Buds';
                   state_result = true;
                   state_rec = {
                     state_name: new_state_name,
@@ -392,6 +401,7 @@ addEvent.watch(function(error,result){
               };
             }
           }else{
+              alert("Forbidden State Transition, Prevented");
             state_rec = {
               state_name: active_asset.state,
               start_time: parseFloat(new Date().getTime() / 1000.0),
@@ -623,11 +633,13 @@ function plantDetails(id, mode){
 
     html += '<br/><select id="'+ id + '" onchange="changePlantState_2(\'' + active_plant.unique_id + '\')"'+'>';
     plantStates.forEach(function(plantState){
-      if(active_plant.state === plantState.state_name ){
-        html += '<option selected value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
-      }else{
-        html += '<option value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
-      }
+        if(plantState.state_name === "ADDED_TO_BATCH"){
+            html += '<option value="'+ plantState.state_name + '" disabled>'+ plantState.state_name + '</option>';
+        }else if(active_plant.state === plantState.state_name ){
+            html += '<option selected value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
+        }else{
+            html += '<option value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
+        }
     });
     html += '</select>';
     html += '</td><td>'+convertTimeLocal(active_plant.last_update_time)+'</td>';
@@ -759,11 +771,13 @@ function plantPage(){
     //console.log(id);
     html += '<br/><select id="'+ id + '" onchange="changePlantState(\'' + plant.unique_id + '\')"'+'>';
     plantStates.forEach(function(plantState){
-      if(plant.state === plantState.state_name ){
-        html += '<option selected value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
-      }else{
-        html += '<option value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
-      }
+        if(plantState.state_name === "ADDED_TO_BATCH"){
+            html += '<option value="'+ plantState.state_name + '" disabled>'+ plantState.state_name + '</option>';
+        }else if(plant.state === plantState.state_name ){
+            html += '<option selected value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
+        }else{
+            html += '<option value="'+ plantState.state_name + '">'+ plantState.state_name + '</option>';
+        }
     });
     html += '</select>';
     html += '</td><td>'+convertTimeLocal(plant.last_update_time)+'</td>';

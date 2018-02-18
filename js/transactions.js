@@ -111,3 +111,17 @@ function findStateColor(desiredStates, activeStateName){
   state_color = state_item.state_color;
   return state_color;
 }
+
+function convertTimeLocal(time) {
+    var d = new Date(time * 1000.0);
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() +
+            " " + d.getHours().toString().lpad("0", 2) + ":" + d.getMinutes().toString().lpad("0", 2) + ":" + d.getSeconds().toString().lpad("0", 2);
+}
+
+String.prototype.lpad = function (padString, length) {
+    var str = this;
+    while (str.length < length) {
+        str = padString + str;
+    }
+    return str;
+};
