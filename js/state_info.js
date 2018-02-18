@@ -17,7 +17,8 @@ function stateInfoPage(){
   state_table_active = true;
   $(state_table_div).html('');
 
-  var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
+  var html = '';
+  // html += '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
   html += '<table class="table table-bordered table-striped" id="state_table">';
   html += '<tr><th>Life Cycle</th><th>Rules</th</tr>';
   html += '<tr><td class="col-xs-6">'+"<img id='myImg' src='"+ getImageName('life_cycle') + "' image_name height='590'>" + '</td>';

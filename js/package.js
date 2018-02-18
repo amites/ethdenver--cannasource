@@ -325,13 +325,23 @@ function packagePage(){
   package_page_is_active = true;
   $(package_page_div).html('');
 
-  $(package_controls_div).html('');
+  html = '<div class="row-btns">';
+  html += '<a href="#" onclick="newPackage_Contract()" class="btn btn-success">Add Package</a>';
+  html += '<a href="#" onclick="getPackageStates()" class="btn btn-info">List Package States</a>';
+  html += '</div>';
+  $(package_controls_div).html(html);
 
-  var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
+
+  var html = '';
+  // html += '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
+  html += '<div class="table-title">';
   html += '<b>Packages Table</b>';
   html += '<input id="package_op_info" type="text name="Operation">';
+  html += '</div>';
+
   html += '<table class="table table-bordered table-striped" id="package_table">';
   html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Package Type</th><th>Currrent State</th><th>Last Update</th><th>Details</th></tr>';  // Type, ID, creation, state, last update
+
   var count = 0;
   packages.forEach(function(package){
     html += '<tr><td>'+(++count)+'</td><td>'+package.unique_id+'</td><td>'+package.asset_type+'</td><td>'+convertTimeLocal(package.creation_time)+'</td><td>'+package.type+'</td><td>'+package.state;
@@ -356,10 +366,6 @@ function packagePage(){
   html += '</table>';
   $(package_page_div).append(html);
 
-  html = '';
-  html += '<a href="#" onclick="newPackage_Contract()" class="btn btn-success">Add Package</a>';
-  html += '<a href="#" onclick="getPackageStates()" class="btn btn-info">List Package States</a>';
-  $(package_controls_div).append(html);
   document.getElementById("package_op_info").value = package_op_string;
 }
 

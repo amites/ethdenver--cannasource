@@ -1,23 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Blockchained MITS</title>
+  <title>CannaSource</title>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
   <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="style.css">
 
   <!-- https://stackoverflow.com/questions/31075893/im-getting-favicon-ico-error -->
   <link rel="shortcut icon" href="#"/>
-
 </head>
 <body class="container">
-  <h1>Blockchained MITS</h1>
-  <h2>Sandbox</h2>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">
+        <img alt="Sourceably" src="img/cannabis_leaf.svg">
+        CannaSource
+      </a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <div style="float: right; margin-top: 8px;">
+        <a href="#" onclick="writeJSON()" class="btn btn-success">Save Assets</a>
+      </div>
+
+      <ul class="nav navbar-nav" style="float: right;">
+
+        <li><a href="#" onclick="draw_inventory_stub(); drawAssetPage()">Asset</a></li>
+        <li><a href="#" onclick="draw_inventory_stub(); plantPage()">Plant</a></li>
+        <li><a href="#" onclick="draw_inventory_stub(); packagePage()">Package</a></li>
+        <!--<li><a href="#" onclick="facilityPage()">Facility</a></li>-->
+        <li><a href="#" onclick="draw_inventory_stub(); userPage()">User</a></li>
+        <li><a href="#" onclick="draw_inventory_stub(); stateInfoPage()">Domain Info</a></li>
+        <li><a href="#" onclick="draw_inventory_stub(); ayt()">AYT</a></li>
+
+        <!--<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li><li><a href="#">Link</a></li>-->
+      </ul>
+
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <!--<h2>Sandbox</h2>-->
 
   <div class="container-fluid">
       <div class="row">
           <!-- <div id='help' class='main'></div> -->
           <div id='main' class="main full-height">
-              <!-- <img src="img/loading.gif"/>&nbsp;Loading Page -->
+              <!-- <img src="img/loading.gif"/>&nbsp;Loading -->
           </div>
       </div>
   </div>

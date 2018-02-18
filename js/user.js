@@ -193,7 +193,8 @@ function userPage(){
 
   users = global_users;
 
-  var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
+  var html = '';
+  // html += '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
   html += '<td><button id='+'new_user'+ ' class="btn btn-success" onclick="userDetails(\'' + '' + '\', \''+'new'+'\')">Add User</button></td>';
   html += '<b>Users Table</b>';
   html += '<input id="user_op_info" type="text name="Operation">';

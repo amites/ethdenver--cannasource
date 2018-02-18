@@ -612,8 +612,8 @@ function plantDetails(id, mode){
     if(mode === 'new'){
       plant_btn_title = 'New Plant';
     }
+
     var html = '<br/><br/>';
-    html += '<a href="#" onclick="newPlant_Contract(\'' + active_plant.unique_id + '\', \''+mode+'\')" class="btn btn-success">'+plant_btn_title+'</a>';
     html += '<b>Plant Details Table</b>';
     html += '<table class="table table-bordered table-striped" id="plant_details_table">';
     html += '<tr><th>IDs</th><th>Asset Type</th><th>Creation</th><th>Currrent State</th><th>Last Update</th><th>Strain<th>Location</th><th>Wet Yield</th><th>Dry Yield</th></tr>';
@@ -665,6 +665,9 @@ function plantDetails(id, mode){
     }
 
     html += '</table>';
+
+    html += '<a href="#" onclick="newPlant_Contract(\'' + active_plant.unique_id + '\', \''+mode+'\')" class="btn btn-success">'+plant_btn_title+'</a>';
+
     $(plant_details_page_div).append(html);
 }
 
@@ -734,11 +737,21 @@ function plantPage(){
 
   $(plant_controls_div).html('');
 
-  var html = '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
+  var html = '<div class="row-btns">';
+  html += '<a href="#" onclick="plantDetails(\'' + '' + '\', \''+'new'+'\')" class="btn btn-success">Add Plant</a>';
+  html += '<a href="#" onclick="plantRoomPage()" class="btn btn-primary">Plant Room</a>';
+  html += '<a href="#" onclick="getPlantStates()" class="btn btn-info">List Plant States</a>';
+  html += '</div>';
+  $(plant_controls_div).append(html);
+
+  html = '<div class="">';
+  // html += '<button class="btn btn-danger"onclick="draw_inventory_stub()" >Go Back</button>';
   html += '<b>Plants Table</b>';
-  html += '<input id="plant_op_info" type="text" name="Operation">';
+  html += '<input id="plant_op_info" disabled type="text" name="Operation">';
+
   html += '<table class="table table-bordered table-striped" id="plant_table">';
   html += '<tr><th>No.</th><th>ID</th><th>Asset Type</th><th>Creation</th><th>Currrent State</th><th>Last Update</th><th>Actions</th></tr>';  // Type, ID, creation, state, last update
+
   var count = 0;
   plants.forEach(function(plant){
     html += '<tr><td>'+(++count)+'</td><td>'+plant.unique_id+'</td><td>'+plant.asset_type+'</td><td>'+convertTimeLocal(plant.creation_time)+'</td><td>'+plant.state;
@@ -762,12 +775,8 @@ function plantPage(){
   html += '</table>';
   $(plant_page_div).append(html);
 
-  html = '';
-  html += '<a href="#" onclick="plantDetails(\'' + '' + '\', \''+'new'+'\')" class="btn btn-success">Add Plant</a>';
-  html += '<a href="#" onclick="plantRoomPage()" class="btn btn-primary">Plant Room</a>';
-  html += '<a href="#" onclick="getPlantStates()" class="btn btn-info">List Plant States</a>';
-  $(plant_controls_div).append(html);
   document.getElementById("plant_op_info").value = plant_op_string;
+
 }
 
 $(document).ready(function() {

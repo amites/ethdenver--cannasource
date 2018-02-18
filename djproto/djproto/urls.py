@@ -37,4 +37,5 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    urlpatterns += static('/', document_root=settings.DOCUMENT_ROOT)
     urlpatterns += static('/js', document_root=os.path.join(settings.DOCUMENT_ROOT, 'js'))
